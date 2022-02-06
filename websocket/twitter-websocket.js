@@ -49,7 +49,7 @@ var workObject = {
     tweetDiff:0,
   },
   queries:{
-    userHashtagAggregateQuery: {"index":process.env.ELASTICSEARCH_INDEX,"body":{"aggs":{"ScreenName":{"terms":{"field":"user.screen_name","order":{"_count":"desc"},"size":50},"aggs":{"Hashtags":{"terms":{"field":"entities.hashtags.text","order":{"_count":"desc"},"size":50}}}}},"size":0,"fields":[{"field":"retweeted_status.timestamp_ms","format":"date_time"},{"field":"timestamp_ms","format":"date_time"}],"script_fields":{},"stored_fields":["*"],"runtime_mappings":{},"_source":{"excludes":[]},"query":{"bool":{"must":[],"filter":[{"range":{"timestamp_ms":{"format":"strict_date_optional_time","gte":"now-15m","lte":"now"}}}],"should":[],"must_not":[]}}}}
+    userHashtagAggregateQuery: {"index":process.env.ELASTICSEARCH_INDEX,"body":{"aggs":{"ScreenName":{"terms":{"field":"user.screen_name","order":{"_count":"desc"},"size":process.env.QUERY_USER_LIMIT},"aggs":{"Hashtags":{"terms":{"field":"entities.hashtags.text","order":{"_count":"desc"},"size":process.env.QUERY_TAG_LIMIT}}}}},"size":0,"fields":[{"field":"retweeted_status.timestamp_ms","format":"date_time"},{"field":"timestamp_ms","format":"date_time"}],"script_fields":{},"stored_fields":["*"],"runtime_mappings":{},"_source":{"excludes":[]},"query":{"bool":{"must":[],"filter":[{"range":{"timestamp_ms":{"format":"strict_date_optional_time","gte":"now-"+process.env.QUERY_SPAN,"lte":"now"}}}],"should":[],"must_not":[]}}}}
   },
   groupCounter: 1,
   runningQuery: "userHashtagAggregateQuery", // here we set the first query to run
@@ -155,8 +155,8 @@ async function prepareData(workObject){
             //these we have to check for duplicates
             if(!usedNodes[tagObject.key]){
               var nodeData = {
-                id: tagObject.key,
-                group: 2
+                id: "#"+tagObject.key,
+                group: workObject.groupCounter
               }
               workObject.network.nodes.push(nodeData);
               usedNodes[tagObject.key] = 1;
@@ -166,8 +166,8 @@ async function prepareData(workObject){
 
             var linkData = {
               source: object.key, //the source will be the user set above
-              target: tagObject.key, //this is the destination hashtag
-              value: object.doc_count //This is optional. It could just be 1,
+              target: "#"+tagObject.key, //this is the destination hashtag
+              value: Math.round(object.doc_count/9) //This is optional. It could just be 1,
                                          // sets the width of the connecting line.
             };
 
