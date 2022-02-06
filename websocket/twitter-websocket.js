@@ -2,11 +2,9 @@
 const WebSocket = require('ws')
 const elastic = require('elasticsearch');
 require('dotenv').config()
-console.log(process.env)
 //set wss var here since it could be used for SSL or NO SSL
 var wss;
 if(process.env.SSL === "NO"){
-  console.log("SSL "+process.env.SSL)
   wss = new WebSocket.Server({ port: 8080 })
 }else{
   const fs = require('fs')
@@ -40,14 +38,6 @@ var elasticClient = new elastic.Client({
 });
 
 var workObject = {
-  stats:{
-    totalUsers: 0,
-    userDiff: 0,
-    lastTotalUser: 0,
-    totalTweets:0,
-    lastTotalTweets:0,
-    tweetDiff:0,
-  },
   queries:{
     userHashtagAggregateQuery: {"index":process.env.ELASTICSEARCH_INDEX,"body":{"aggs":{"ScreenName":{"terms":{"field":"user.screen_name","order":{"_count":"desc"},"size":process.env.QUERY_USER_LIMIT},"aggs":{"Hashtags":{"terms":{"field":"entities.hashtags.text","order":{"_count":"desc"},"size":process.env.QUERY_TAG_LIMIT}}}}},"size":0,"fields":[{"field":"retweeted_status.timestamp_ms","format":"date_time"},{"field":"timestamp_ms","format":"date_time"}],"script_fields":{},"stored_fields":["*"],"runtime_mappings":{},"_source":{"excludes":[]},"query":{"bool":{"must":[],"filter":[{"range":{"timestamp_ms":{"format":"strict_date_optional_time","gte":"now-"+process.env.QUERY_SPAN,"lte":"now"}}}],"should":[],"must_not":[]}}}}
   },
@@ -60,18 +50,10 @@ var workObject = {
   }
 };
 
-
-
-if(process.env.DEBUG){
-  console.log(workObject.queries[workObject.runningQuery]);
-}
-
 refreshData(workObject);
 wss.on('connection', ws => {
-  console.log('Client Connected')
   refreshData(workObject);
   ws.on('message', message => {
-    console.log(`Received message => ${message}`)
   })
 });
 
@@ -101,7 +83,6 @@ async function sendToClients(workObject){
 
 async function refreshData(workObject){
   try{
-    console.log(workObject);
     runElasticsearchQuery(workObject).
     then((workObject => prepareData(workObject).
     then((workObject => sendToClients(workObject)))));
@@ -112,7 +93,6 @@ async function refreshData(workObject){
 
 async function prepareData(workObject){
   try{
-    console.log("prepareData "+workObject.runningQuery);
     //Shorten bucket variable inside this function
     var data = workObject.response;
     //Create name object so the same names do not end up in nodes twice
@@ -126,19 +106,14 @@ async function prepareData(workObject){
       links: [],
       barchart: []
     }
-    console.log(data);
     if(workObject.runningQuery === "userHashtagAggregateQuery"){
-      console.log("This is userHashtagAggregateQuery")
       //Loop through the buckets
       for (const object of data.ScreenName.buckets){
-        console.log("------------------------------------------------------")
-        console.log(object);
         //We only want to send data that has hashtags.
         //Since the response is in an array we can check
         //the length of the array to see if we should
         //process this bucket
         if(object.Hashtags.buckets.length > 0){
-          console.log("Yes hashtag buckets");
           var barChart = {User: object.key, Value: object.doc_count};
           workObject.network.barchart.push(barChart);
           var nodeData = {
@@ -150,7 +125,6 @@ async function prepareData(workObject){
           workObject.network.nodes.push(nodeData);
           //Loop through the hash tag bucket
           for (const tagObject of object.Hashtags.buckets){
-            console.log(tagObject);
             //the hashtags also need a node
             //these we have to check for duplicates
             if(!usedNodes[tagObject.key]){
@@ -173,16 +147,11 @@ async function prepareData(workObject){
 
             workObject.network.links.push(linkData);
           }
-          console.log(workObject.network);
           //Increment the group counter since we are done with it
           ++workObject.groupCounter
         }else{
-          console.log("No hashtag buckets")
         }
-        console.log("------------------------------------------------------")
-
       }
-
     }
     return workObject;
   }catch(error){
