@@ -13,7 +13,6 @@ if(process.env.SSL === "NO"){
   const express = require('express');
   const http = require('http');
   const serverPort = process.env.SERVER_PORT || '9889';
-  const staticContent = 'pub';
   const app = express();
   const server = app.listen(serverPort, () => console.log(`Server listening on ${serverPort}: `));
   const SocketServer = require('ws').Server;
