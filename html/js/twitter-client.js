@@ -17,8 +17,8 @@ function buildD3BarChart(d3Data){
 
 	const svg = d3.select("#userBarDiv"), 
 	margin = {top: 20, right: 20, bottom: 80, left: 40}, 
-	width = +document.getElementById("networkSVG").offsetWidth - margin.left - margin.right, 
-	height = +document.getElementById("networkSVG").offsetHeight - margin.top - margin.bottom, 
+	width = +document.getElementById("userBarDiv").offsetWidth - margin.left - margin.right, 
+	height = +document.getElementById("userBarDiv").offsetHeight - margin.top - margin.bottom, 
 	x = d3.scaleBand().rangeRound([0, width]).padding(0.2), 
 	y = d3.scaleLinear().rangeRound([height, 0]), 
 	g = svg.append("g") 
