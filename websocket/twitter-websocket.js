@@ -1,4 +1,3 @@
-
 const WebSocket = require('ws')
 const elastic = require('elasticsearch');
 require('dotenv').config()
@@ -51,12 +50,12 @@ var workObject = {
 
 refreshData(workObject);
 wss.on('connection', ws => {
-  refreshData(workObject);
+  //refreshData(workObject);
   ws.on('message', message => {
   })
 });
 
-//setInterval(refreshData, 5000, workObject);
+setInterval(refreshData, 5000, workObject);
 
 //We will use this async function to actually run the function chain
 //so we can call it from an Interval timer.
