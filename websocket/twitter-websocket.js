@@ -118,7 +118,7 @@ async function prepareData(workObject){
           workObject.network.barchart.push(barChart);
           var nodeData = {
             id: object.key,
-            group: workObject.groupCounter //Each screen_name will be its own group
+            group: workObject.groupCounter, //Each screen_name will be its own group
           };
 
           //push nodeData to the array
@@ -130,7 +130,7 @@ async function prepareData(workObject){
             if(!usedNodes[tagObject.key]){
               var nodeData = {
                 id: "#"+tagObject.key,
-                group: workObject.groupCounter
+                group: workObject.groupCounter,
               }
               workObject.network.nodes.push(nodeData);
               usedNodes[tagObject.key] = 1;
@@ -141,8 +141,7 @@ async function prepareData(workObject){
             var linkData = {
               source: object.key, //the source will be the user set above
               target: "#"+tagObject.key, //this is the destination hashtag
-              value: Math.round(object.doc_count/9) //This is optional. It could just be 1,
-                                         // sets the width of the connecting line.
+              value: Math.round(object.doc_count/9) //This is optional. It could just be 1, sets the width of the connecting line.
             };
 
             workObject.network.links.push(linkData);
