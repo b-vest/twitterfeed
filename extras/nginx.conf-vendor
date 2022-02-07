@@ -1,7 +1,7 @@
 server {
         listen 80 default_server;
         listen [::]:80 default_server;
-        root /home/youtusername/twitterfeed/html;
+        root /home/yourusername/tmp/twitterfeed-main/html;
         index index.html index.htm index.nginx-debian.html;
 
         server_name _;
