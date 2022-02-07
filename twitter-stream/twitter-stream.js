@@ -72,5 +72,5 @@ function checkLogFrequency(){
     process.exit(1)
 
   }
-
+return
 }
