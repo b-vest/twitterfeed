@@ -1,5 +1,5 @@
 //There is no other way to set this since it runs on the browser
-var ws = new WebSocket("ws://192.168.2.192:8080/");
+var ws = new WebSocket("ws://localhost:8080/");
 
 			
 ws.onmessage = function (evt) { 
