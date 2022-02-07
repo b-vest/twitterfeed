@@ -59,31 +59,22 @@ setInterval(refreshData, 5000, workObject);
 
 //We will use this async function to actually run the function chain
 //so we can call it from an Interval timer.
-
-async function sendToClients(workObject){
-  try{
-    //We will actually send another object
-    //so we can add a few things that
-    //can change depending on the query.
-    var sendObject = {};
-    if(workObject.runningQuery === "userHashtagAggregateQuery"){
-      sendObject.data = workObject.network;
-      sendObject.function = "userHashtagAggregateQuery"
-    }
-    wss.clients.forEach(function(client) {
-      client.send(JSON.stringify(sendObject));  
-    });
-    return workObject;
-  }catch(error){
-    console.log(error)
-  }
-}
-
 async function refreshData(workObject){
   try{
     runElasticsearchQuery(workObject).
     then((workObject => prepareData(workObject).
     then((workObject => sendToClients(workObject)))));
+  }catch(error){
+    console.log(error);
+  }
+}
+
+
+async function runElasticsearchQuery(workObject){
+  try{
+    const response = await elasticClient.search(workObject.queries[workObject.runningQuery]);
+    workObject.response = response.aggregations
+    return workObject;
   }catch(error){
     console.log(error);
   }
@@ -156,13 +147,26 @@ async function prepareData(workObject){
   }
 }
 
-
-async function runElasticsearchQuery(workObject){
+async function sendToClients(workObject){
   try{
-    const response = await elasticClient.search(workObject.queries[workObject.runningQuery]);
-    workObject.response = response.aggregations
+    //We will actually send another object
+    //so we can add a few things that
+    //can change depending on the query.
+    var sendObject = {};
+    if(workObject.runningQuery === "userHashtagAggregateQuery"){
+      sendObject.data = workObject.network;
+      sendObject.function = "userHashtagAggregateQuery"
+    }
+    wss.clients.forEach(function(client) {
+      client.send(JSON.stringify(sendObject));  
+    });
     return workObject;
   }catch(error){
-    console.log(error);
+    console.log(error)
   }
 }
+
+
+
+
+
