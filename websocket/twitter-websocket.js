@@ -103,36 +103,41 @@ async function prepareData(workObject){
         //the length of the array to see if we should
         //process this bucket
         if(object.Hashtags.buckets.length > 0){
+          //this is added to the barchart array that will be sent to the client
           var barChart = {User: object.key, Value: object.doc_count};
+          //push to barchart array
           workObject.network.barchart.push(barChart);
+          //this is added to the network.nodes array for use by the network graph
           var nodeData = {
             id: object.key,
             group: workObject.groupCounter, //Each screen_name will be its own group
           };
 
-          //push nodeData to the array
+          //push networ.nodes array
           workObject.network.nodes.push(nodeData);
           //Loop through the hash tag bucket
           for (const tagObject of object.Hashtags.buckets){
             //the hashtags also need a node
             //these we have to check for duplicates
             if(!usedNodes[tagObject.key]){
+              //this is used by the d3 network graph
               var nodeData = {
-                id: "#"+tagObject.key,
+                id: "#"+tagObject.key, 
                 group: workObject.groupCounter,
-              }
+              }//push to the networ.nodes array
               workObject.network.nodes.push(nodeData);
+              //Add entry to duplicate checker
               usedNodes[tagObject.key] = 1;
             }else{
               ++usedNodes[tagObject.key]
             }
-
+            //this is needed by the d3 network graph
             var linkData = {
               source: object.key, //the source will be the user set above
               target: "#"+tagObject.key, //this is the destination hashtag
               value: Math.round(object.doc_count/9) //This is optional. It could just be 1, sets the width of the connecting line.
             };
-
+            //push to network.links array
             workObject.network.links.push(linkData);
           }
           //Increment the group counter since we are done with it
