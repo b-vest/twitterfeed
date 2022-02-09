@@ -1,5 +1,5 @@
 {
-  "name": "twitter-stream",
+  "name": "servers",
   "version": "1.0.0",
   "description": "",
   "main": "twitter-stream.js",
@@ -12,6 +12,8 @@
   "dependencies": {
     "dotenv": "^16.0.0",
     "elasticsearch": "^16.7.2",
-    "twitter": "^1.7.1"
+    "express": "^4.17.2",
+    "twitter": "^1.7.1",
+    "ws": "^8.5.0"
   }
 }
