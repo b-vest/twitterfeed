@@ -4,6 +4,9 @@ const Twitter = require('twitter');
 const elastic = require('elasticsearch');
 require('dotenv').config()
 
+if(process.env.STREAM_DEBUG === 1){
+  console.log("DEBUG ENABLED "+process.env.STREAM_DEBUG)
+}
 //Build Elasticsearch Client using dotenv variables
 var elasticClient = new elastic.Client({
   host: process.env.ELASTICSEARCH_USER+":"+process.env.ELASTICSEARCH_PASSWORD+"@"+process.env.ELASTICSEARCH_HOST,
@@ -55,8 +58,10 @@ var myVar = setInterval(checkLogFrequency, 20000);
 
 async function bulkIndexTweets(sendArray){
 	try{
-      if(process.env.DEBUG){
+      if(process.env.STREAM_DEBUG){
         console.log("DEBUG: running bulkIndexTweets");
+        console.log("SAMPLE:")
+        console.log(sendArray[0]);
       }
       //create flatmap out of array, this adds the _index: field to every element of the array created above.
 	  	const body = sendArray.flatMap(doc => [{ index: { _index: process.env.ELASTICSEARCH_INDEX } }, doc])
