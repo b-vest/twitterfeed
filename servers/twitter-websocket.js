@@ -74,6 +74,14 @@ refreshData(workObject);
 wss.on('connection', ws => {
   //refreshData(workObject);
   ws.on('message', message => {
+    console.log(message)
+    //Send first packet so user does not have to wait for the timer
+    var sendObject = {};
+    if(workObject.runningQuery === "userHashtagAggregateQuery"){
+      sendObject.data = workObject.network;
+      sendObject.function = "userHashtagAggregateQuery"
+    }
+    ws.send(JSON.stringify(sendObject))
   })
 });
 
