@@ -1,57 +1,65 @@
 //There is no other way to set this since it runs on the browser
-var ws = new WebSocket("ws://192.168.2.192:8080/");
+var ws = new WebSocket("ws://localhost:8080/");
+var newGraph;
 
-			
-ws.onmessage = function (evt) { 
-	var received_msg = evt.data;
+ws.onmessage = function(evt) {
+    var received_msg = evt.data;
     console.log("Message is received...");
     //convert data from websocket to JSON object
     var jsonData = JSON.parse(received_msg);
     console.log(jsonData);
-    buildD3NetworkGraph(jsonData.data)
+    if(!newGraph){
+        buildD3NetworkGraph(jsonData.data)
+        newGraph = 1;
+    }
     buildD3BarChart(jsonData.data.barchart)
-    
-};				
 
-function buildD3BarChart(d3Data){
+};
 
-	const svg = d3.select("#userBarDiv"), 
-	margin = {top: 20, right: 20, bottom: 80, left: 40}, 
-	width = +document.getElementById("userBarDiv").offsetWidth - margin.left - margin.right, 
-	height = +document.getElementById("userBarDiv").offsetHeight - margin.top - margin.bottom, 
-	x = d3.scaleBand().rangeRound([0, width]).padding(0.2), 
-	y = d3.scaleLinear().rangeRound([height, 0]), 
-	g = svg.append("g") 
-	.attr("transform", `translate(${margin.left},${margin.top})`); 
-	console.log(width,height)
+function buildD3BarChart(d3Data) {
 
-	var data = d3Data; 
+    const svg = d3.select("#userBarDiv"),
+        margin = {
+            top: 20,
+            right: 20,
+            bottom: 80,
+            left: 40
+        },
+        width = +document.getElementById("userBarDiv").offsetWidth - margin.left - margin.right,
+        height = +document.getElementById("userBarDiv").offsetHeight - margin.top - margin.bottom,
+        x = d3.scaleBand().rangeRound([0, width]).padding(0.2),
+        y = d3.scaleLinear().rangeRound([height, 0]),
+        g = svg.append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+    console.log(width, height)
 
-	x.domain(data.map(d => d.User)); 
-	y.domain([0, d3.max(data, d => d.Value)]); 
+    var data = d3Data;
 
-	g.append("g") 
-	.attr("class", "axis axis-x")
-	.attr("transform", `translate(0,${height})`) 
-	.call(d3.axisBottom(x))
-	.selectAll("text")	
+    x.domain(data.map(d => d.User));
+    y.domain([0, d3.max(data, d => d.Value)]);
+
+    g.append("g")
+        .attr("class", "axis axis-x")
+        .attr("transform", `translate(0,${height})`)
+        .call(d3.axisBottom(x))
+        .selectAll("text")
         .style("text-anchor", "end")
         .attr("dx", "-.8em")
         .attr("dy", ".15em")
-        .attr("transform", "rotate(-65)");; 
+        .attr("transform", "rotate(-65)");;
 
-	g.append("g") 
-	.attr("class", "axis axis-y")
-	.call(d3.axisLeft(y).ticks(10)); 
+    g.append("g")
+        .attr("class", "axis axis-y")
+        .call(d3.axisLeft(y).ticks(10));
 
-	g.selectAll(".bar") 
-	.data(data) 
-	.enter().append("rect") 
-	.attr("class", "bar") 
-	.attr("x", d => x(d.User)) 
-	.attr("y", d => y(d.Value)) 
-	.attr("width", x.bandwidth()) 
-	.attr("height", d => height - y(d.Value)); 
+    g.selectAll(".bar")
+        .data(data)
+        .enter().append("rect")
+        .attr("class", "bar")
+        .attr("x", d => x(d.User))
+        .attr("y", d => y(d.Value))
+        .attr("width", x.bandwidth())
+        .attr("height", d => height - y(d.Value));
 
 }
 
@@ -207,7 +215,4 @@ function buildD3NetworkGraph(d3Data) {
         d.fx = null;
         d.fy = null;
     }
-
-
-
 }

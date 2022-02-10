@@ -4,14 +4,12 @@ const Twitter = require('twitter');
 const elastic = require('elasticsearch');
 require('dotenv').config()
 
-console.log(process.env)
-if(process.env.STREAM_DEBUG === 1){
-  console.log("DEBUG ENABLED "+process.env.STREAM_DEBUG)
+if(process.env.STREAM_DEBUG === "1"){
+  console.log("DEBUG ENABLED")
 }
 //Build Elasticsearch Client using dotenv variables
 var elasticClient = new elastic.Client({
   host: process.env.ELASTICSEARCH_USER+":"+process.env.ELASTICSEARCH_PASSWORD+"@"+process.env.ELASTICSEARCH_HOST,
-  log: 'info',
     sniff: true,
     apiVersion: '7.x',
 });
@@ -59,10 +57,10 @@ var myVar = setInterval(checkLogFrequency, 20000);
 
 async function bulkIndexTweets(sendArray){
 	try{
-      if(process.env.STREAM_DEBUG){
+      if(process.env.STREAM_DEBUG === "1"){
         console.log("DEBUG: running bulkIndexTweets");
         console.log("SAMPLE:")
-        console.log(sendArray[0]);
+        console.log("Tweet: "+sendArray[0].user.screen_name+" -> "+sendArray[0].created_at);
       }
       //create flatmap out of array, this adds the _index: field to every element of the array created above.
 	  	const body = sendArray.flatMap(doc => [{ index: { _index: process.env.ELASTICSEARCH_INDEX } }, doc])
@@ -96,7 +94,7 @@ function checkLogFrequency(){
   //if difference is greater than TWITTER_SOCKET_TIMEOUT exit the process
   //we depend on pm2 to restart it if this happens.
   if(diffrence >= process.env.TWITTER_SOCKET_TIMEOUT){
-    console.log("Exiting. Time difference is > 120000ms")
+    console.log("Exiting. Time difference is > "+process.env.TWITTER_SOCKET_TIMEOUT);
     process.exit(1)
 
   }
