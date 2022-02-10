@@ -1,3 +1,4 @@
+//twitter-stream.js Read twitter Stream and ingest it into Elasticsearch
 const Twitter = require('twitter');
 const elastic = require('elasticsearch');
 require('dotenv').config()
