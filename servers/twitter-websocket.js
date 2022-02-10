@@ -83,6 +83,9 @@ setInterval(refreshData, process.env.DATA_UPDATE_INTERVAL, workObject);
 //so we can call it from an Interval timer.
 async function refreshData(workObject){
   try{
+    if(process.env.SOCKET_DEBUG){
+      console.log("DEBUG: "+JSON.stringify(workObject))
+    }
     runElasticsearchQuery(workObject).
     then((workObject => prepareData(workObject).
     then((workObject => sendToClients(workObject)))));

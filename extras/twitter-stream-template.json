@@ -1,0 +1,32 @@
+{
+  "index_patterns": ["twitter-stream*"],
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 0
+  },
+    "mappings": {
+      "dynamic_templates": [
+        {
+          "strings_as_keyword": {
+            "match_mapping_type": "string",
+            "mapping": {
+              "ignore_above": 1024,
+              "type": "keyword"
+            }
+          }
+        }
+      ],
+      "properties": {
+        "retweeted_status": {
+          "properties": {
+            "timestamp_ms": {
+              "type": "date"
+            }
+          }
+        },
+        "timestamp_ms": {
+          "type": "date"
+        }
+      }
+    }
+}
