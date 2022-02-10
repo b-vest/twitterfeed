@@ -1,7 +1,7 @@
 //There is no other way to set this since it runs on the browser
-var ws = new WebSocket("ws://localhost:8080/");
+var ws = new WebSocket("ws://192.168.2.192:8080/");
 var newGraph;
-
+var newChart;
 ws.onmessage = function(evt) {
     var received_msg = evt.data;
     console.log("Message is received...");
@@ -17,7 +17,7 @@ ws.onmessage = function(evt) {
 };
 
 function buildD3BarChart(d3Data) {
-
+    d3.selectAll("#userBarDiv > *").remove();
     const svg = d3.select("#userBarDiv"),
         margin = {
             top: 20,
@@ -25,14 +25,13 @@ function buildD3BarChart(d3Data) {
             bottom: 80,
             left: 40
         },
-        width = +document.getElementById("userBarDiv").offsetWidth - margin.left - margin.right,
-        height = +document.getElementById("userBarDiv").offsetHeight - margin.top - margin.bottom,
+        width = 800,
+        height = 300,
         x = d3.scaleBand().rangeRound([0, width]).padding(0.2),
         y = d3.scaleLinear().rangeRound([height, 0]),
         g = svg.append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
     console.log(width, height)
-
     var data = d3Data;
 
     x.domain(data.map(d => d.User));
