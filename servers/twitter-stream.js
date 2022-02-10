@@ -4,6 +4,7 @@ const Twitter = require('twitter');
 const elastic = require('elasticsearch');
 require('dotenv').config()
 
+console.log(process.env)
 if(process.env.STREAM_DEBUG === 1){
   console.log("DEBUG ENABLED "+process.env.STREAM_DEBUG)
 }
