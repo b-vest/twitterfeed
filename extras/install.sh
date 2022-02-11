@@ -12,6 +12,6 @@ jsfilename="../html/js/twitter-client.js"
 sed -i "s/localhost:8080/$THISIP/" $jsfilename
 
 pm2 start ../servers/twitter-stream.js
-echo "Sleeping 5 seconds for stream to settle\n";
-sleep 5
+echo "Sleeping 2 seconds for stream to settle\n";
+sleep 2
 pm2 start ../servers/twitter-websocket.js
