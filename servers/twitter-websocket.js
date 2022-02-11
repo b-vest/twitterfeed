@@ -1,7 +1,9 @@
 // twitter-websocket.js elasticsearch to browser query engine
 const WebSocket = require('ws');
 const elastic = require('elasticsearch');
-require('dotenv').config()
+const path = require('path'); 
+
+require('dotenv').config({ path: path.join(__dirname, '.env') })
 //set wss var here since it could be used for SSL or NO SSL
 var wss;
 //This script uses the .env setting SSL to decide if the scipt should load the SSL
